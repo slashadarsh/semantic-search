@@ -25,7 +25,7 @@ public class PgVectorService {
 
     public void insertRecord(Long id, String content, List<Double> contentEmbeddings) {
         String contentEmbeddingsStr = contentEmbeddings.toString().replace("[", "{").replace("]", "}");
-        jdbcClient.sql("INSERT INTO test_embeddings (id, content, content_embeddings) VALUES (:id, :content, :content_embeddings::double precision[])")
+        jdbcClient.sql("INSERT INTO product_embeddings (id, content, content_embeddings) VALUES (:id, :content, :content_embeddings::double precision[])")
                 .param("id", id)
                 .param("content", content)
                 .param("content_embeddings", contentEmbeddingsStr)
@@ -34,12 +34,12 @@ public class PgVectorService {
 
 
 
-    public List<String> searchTestEmbeddings(String prompt) {
+    public List<String> searchProductEmbeddings(String prompt) {
         List<Double> promptEmbedding = embeddingModel.embed(prompt);
 
         JdbcClient.StatementSpec query = jdbcClient.sql(
                         "SELECT content " +
-                                "FROM test_embeddings WHERE 1 - (content_embeddings <=> :user_promt::vector) > :match_threshold "
+                                "FROM product_embeddings WHERE 1 - (content_embeddings <=> :user_promt::vector) > :match_threshold "
                                 +
                                 "ORDER BY content_embeddings <=> :user_promt::vector LIMIT :match_cnt")
                 .param("user_promt", promptEmbedding.toString())
@@ -52,7 +52,7 @@ public class PgVectorService {
     public Long getLatestId() {
         JdbcClient.StatementSpec query = jdbcClient.sql(
                 "SELECT id " +
-                        "FROM test_embeddings " +
+                        "FROM product_embeddings " +
                         "ORDER BY id DESC " +
                         "LIMIT 1");
 

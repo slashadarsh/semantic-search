@@ -30,11 +30,11 @@ public class SimilaritySearchService {
         this.chatClient = builder.build();
     }
     public List<String> searchSimilarVectorsFromPG(String input) throws IOException {
-        return pgVectorService.searchTestEmbeddings(input);
+        return pgVectorService.searchProductEmbeddings(input);
     }
 
     public String searchIndex(String input, String language) throws IOException{
-        List<String> contextList = pgVectorService.searchTestEmbeddings(input);
+        List<String> contextList = pgVectorService.searchProductEmbeddings(input);
         String context=contextList.stream().collect(Collectors.joining("/n "));
         return chatClient.prompt()
                 .system(s -> {
