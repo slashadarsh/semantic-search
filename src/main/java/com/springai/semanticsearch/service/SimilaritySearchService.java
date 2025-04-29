@@ -30,17 +30,28 @@ public class SimilaritySearchService {
         this.chatClient = builder.build();
     }
     public List<String> searchSimilarVectorsFromPG(String input) throws IOException {
-        return pgVectorService.searchProductEmbeddings(input);
+        return pgVectorService.searchCampaignEmbeddings(input);
     }
 
     public String searchIndex(String input, String language) throws IOException{
-        List<String> contextList = pgVectorService.searchProductEmbeddings(input);
+        List<String> contextList = pgVectorService.searchCampaignEmbeddings(input);
         String context=contextList.stream().collect(Collectors.joining("/n "));
         return chatClient.prompt()
                 .system(s -> {
                     s.text(extKnowledgeBasePdf);
                     s.param("pdf_extract",context);
                     s.param("language",language);
+                })
+                .user(u -> {
+                    u.text(input);
+                })
+                .call().content();
+    }
+
+    public String searchIndexWoRAG(String input) throws IOException{
+        return chatClient.prompt()
+                .system(s -> {
+                    s.text("You are a helpful assistant, please help the user with their query.");
                 })
                 .user(u -> {
                     u.text(input);

@@ -48,4 +48,17 @@ public class VectorController {
         String responseJson = objectMapper.writeValueAsString(responseMap);
         return new ResponseEntity<>(responseJson, HttpStatus.OK);
     }
+
+    @PostMapping("/search-wo-rag")
+    public ResponseEntity<String> searchWoRag(@RequestBody SimilaritySearchRequest request) throws IOException {
+        String result = similaritySearchService.searchIndexWoRAG(request.getInput());
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("status", "OK");
+        responseMap.put("code", 200);
+        responseMap.put("message", "Request Successful");
+        responseMap.put("data", Map.of("message", result));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String responseJson = objectMapper.writeValueAsString(responseMap);
+        return new ResponseEntity<>(responseJson, HttpStatus.OK);
+    }
 }
